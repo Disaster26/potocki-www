@@ -1,0 +1,46 @@
+<!--META {
+ "title": "Kontakt i dojazd - Potocki Dwór, Potok Wielki 83A, Jędrzejów",
+ "description": "Potocki Dwór, Potok Wielki 83A, 28-300 Jędrzejów. Recepcja 798 033 101, przyjęcia 784 043 570, oferta dla firm 532 162 301. Godziny otwarcia, mapa dojazdu i formularz.",
+ "og": "fasada",
+ "cta_naglowek": ["Zapytaj o termin", "przyjecia/#planer"],
+ "cta_mob": ["Napisz do nas", "kontakt/#formularz"],
+ "mapa": true
+} -->
+<section class="kontakt-pierwszy" aria-labelledby="h-kontakt">
+  <div class="wrap kontakt-in">
+    <div>
+      <h1 id="h-kontakt" data-mob-trigger>Kontakt i dojazd</h1>
+      <p class="lead-s">Hotel i Restauracja Potocki Dwór<br>Potok Wielki 83A, 28-300 Jędrzejów</p>
+      <dl class="dane">
+        <dt>Recepcja, rezerwacje</dt><dd><a href="tel:{{TEL}}" data-ev="click_tel">{{TEL_T}}</a><br><a href="mailto:{{MAIL}}">{{MAIL}}</a></dd>
+        <dt>Przyjęcia i imprezy</dt><dd><a href="tel:+48784043570" data-ev="click_tel">784 043 570</a><br><a href="mailto:k.wieczorek@potockidwor.pl">k.wieczorek@potockidwor.pl</a></dd>
+        <dt>Oferta dla firm</dt><dd>Michał Pronobis<br><a href="tel:+48532162301" data-ev="click_tel">532 162 301</a><br><a href="mailto:m.pronobis@potockidwor.pl">m.pronobis@potockidwor.pl</a></dd>
+        <dt>Restauracja</dt><dd>codziennie 12:00-22:00,<br>w niedzielę 12:00-21:00</dd>
+        <dt>Hotel</dt><dd>codziennie 12:00-22:00,<br>w niedzielę 12:00-21:00</dd>
+        <dt>Media społecznościowe</dt><dd><a href="https://www.facebook.com/PotockiDwor" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/potocki_dwor/" target="_blank" rel="noopener">Instagram</a></dd>
+      </dl>
+      <div class="akcje" style="margin-top:0">
+        <a class="btn btn-granat" href="https://www.google.com/maps/dir/?api=1&amp;destination=50.6085,20.2364" target="_blank" rel="noopener">Wyznacz trasę</a>
+      </div>
+    </div>
+    <div class="mapa" id="mapa" role="region" aria-label="Mapa dojazdu do Potockiego Dworu"></div>
+  </div>
+</section>
+
+<section class="sekcja ciemna" id="formularz" aria-labelledby="h-form-k">
+  <div class="wrap">
+    <div class="naglowek">
+      <h2 id="h-form-k">Napisz do nas</h2>
+      <p class="lead-s">Pytanie o stolik, nocleg, przyjęcie albo wydarzenie firmowe. Odpowiemy telefonicznie lub e-mailem.</p>
+    </div>
+    <form class="formularz" data-form="kontakt" data-temat="Wiadomość ze strony potockidwor.pl">
+      <div class="pole"><label for="k-imie">Imię i nazwisko</label><input id="k-imie" name="imie" autocomplete="name" required><span class="blad">Podaj imię i nazwisko.</span></div>
+      <div class="pole"><label for="k-temat">Temat</label><select id="k-temat" name="temat"><option>Restauracja, rezerwacja stolika</option><option>Hotel, nocleg</option><option>Przyjęcie okolicznościowe</option><option>Wydarzenie firmowe</option><option>Inne</option></select></div>
+      <div class="pole"><label for="k-tel">Telefon</label><input id="k-tel" name="telefon" type="tel" autocomplete="tel" required><span class="blad">Podaj numer telefonu.</span></div>
+      <div class="pole"><label for="k-mail">E-mail (opcjonalnie)</label><input id="k-mail" name="email" type="email" autocomplete="email"><span class="blad">Sprawdź adres e-mail.</span></div>
+      <div class="pole cale"><label for="k-wiad">Wiadomość</label><textarea id="k-wiad" name="wiadomosc" rows="5" required></textarea><span class="blad">Napisz wiadomość.</span></div>
+      <p class="form-info cale">Dane wykorzystamy wyłącznie do odpowiedzi na wiadomość.</p>
+      <div class="cale"><button class="btn btn-zloty" type="submit">Wyślij wiadomość</button></div>
+    </form>
+  </div>
+</section>

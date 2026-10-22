@@ -1,0 +1,4 @@
+# Do wgrania na potockidwor.pl po przełączeniu (podgląd na GitHub Pages ma noindex)
+User-agent: *
+Allow: /
+Sitemap: https://potockidwor.pl/sitemap.xml
