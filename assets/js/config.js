@@ -10,14 +10,16 @@ window.POTOCKI_CONFIG = {
      Puste = e-mail ogólny powyżej (hotel, kontakt - DO POTWIERDZENIA). */
   emaileFormularzy: { przyjecia: 'k.wieczorek@potockidwor.pl', hotel: '', biznes: 'm.pronobis@potockidwor.pl', kontakt: '' },
 
-  /* DO UZUPEŁNIENIA (klient): Kalendarz Google "Rezerwacje sal" - zajętość dla planera przyjęć.
+  /* Kalendarze Google sal (Balowa, Bankietowa) - zajętość dla planera przyjęć. PODPIĘTE 23.10.2026:
+     skrypt Apps Script "Potocki - zajetosc sal" na koncie odrobimy@gmail.com (Freebusy, tylko wolny/zajęty, cache 10 min).
+     Dawny opis:
      url: publiczny adres iCal (.ics) albo JSON. Kalendarz Google nie pozwala czytać pliku .ics
      bezpośrednio z przeglądarki (CORS), dlatego w WordPressie adres będzie pobierany po stronie serwera
      (np. /wp-json/potocki/v1/zajetosc) i oddawany jako JSON:
        { "zajete": { "2026-11-14": ["*"], "2026-11-21": ["balowa"] } }
      "*" = zajęte wszystkie sale; inaczej identyfikatory sal: balowa, bankietowa, restauracyjna, patio.
      Z wydarzeń brana jest tylko data (i ewentualnie nazwa sali), bez treści. */
-  kalendarz: { url: '', format: 'json' },
+  kalendarz: { url: 'https://script.google.com/macros/s/AKfycbzcysSXMy3uRuL-cOpiwYZEtiDcFfK1ak0q_Sxltr1phnH4sHIww5uXf8Xemmkw6-bl/exec', format: 'json' },
 
   /* Kod modułu rezerwacji KW Hotel PRO (HTML/skrypt od dostawcy) albo link - klient doda później, na razie formularz zapytania. */
   kwHotel: { kod: '', link: '' },

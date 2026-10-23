@@ -225,7 +225,7 @@
     function rysuj() {
       var s = SALE[sala()], stan;
       if (!st.data) stan = '<p class="stan">Wybierz datę w kalendarzu.</p>';
-      else if (zajete) stan = czyZajety(st.data) ? '<p class="stan zaj">' + fmt(st.data) + ': termin zajęty, wybierz inny dzień.</p>' : '<p class="stan wolny">' + fmt(st.data) + ': termin wolny.</p>';
+      else if (zajete) stan = czyZajety(st.data) ? '<p class="stan zaj">' + fmt(st.data) + ': termin zajęty, wybierz inny dzień.</p>' : '<p class="stan wolny">' + fmt(st.data) + ': termin wolny, potwierdzimy go w odpowiedzi na zapytanie.</p>';
       else stan = '<p class="stan">' + fmt(st.data) + ': dostępność sali potwierdzimy w odpowiedzi na zapytanie.</p>';
       var foto = '<img class="sala-mini" src="' + ROOT + 'assets/img/' + s.foto + '-800.webp" alt="' + s.nazwa + '" width="800" height="450">';
       var inne = INNE.filter(function (x) { return st.goscie <= x.max; }).map(function (x) { return x.nazwa + ' (do ' + x.max + ' osób)'; });
