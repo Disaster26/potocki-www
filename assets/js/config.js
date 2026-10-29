@@ -6,9 +6,9 @@ window.POTOCKI_CONFIG = {
   telefonTekst: '798 033 101',
   email: 'recepcja@potockidwor.pl',
 
-  /* Adresy formularzy (klient 22.10): przyjęcia -> k.wieczorek@, biznes -> m.pronobis@.
-     Puste = e-mail ogólny powyżej (hotel, kontakt - DO POTWIERDZENIA). */
-  emaileFormularzy: { przyjecia: 'k.wieczorek@potockidwor.pl', hotel: '', biznes: 'm.pronobis@potockidwor.pl', kontakt: '' },
+  /* Adresy formularzy (klient 22.10): przyjęcia -> k.wieczorek@, biznes -> m.pronobis@;
+     hotel -> recepcja@ (klient 29.10). Puste = e-mail ogólny powyżej. */
+  emaileFormularzy: { przyjecia: 'k.wieczorek@potockidwor.pl', hotel: 'recepcja@potockidwor.pl', biznes: 'm.pronobis@potockidwor.pl', kontakt: '' },
 
   /* Kalendarze Google sal (Balowa, Bankietowa) - zajętość dla planera przyjęć. PODPIĘTE 23.10.2026:
      skrypt Apps Script "Potocki - zajetosc sal" na koncie odrobimy@gmail.com (Freebusy, tylko wolny/zajęty, cache 10 min).
