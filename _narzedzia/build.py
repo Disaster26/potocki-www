@@ -4,7 +4,7 @@
 import os, json, re
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 SRC = os.path.join(ROOT, '_src')
-V = '5'  # wersja plikow css/js (cache)
+V = '6'  # wersja plikow css/js (cache)
 
 STRONY = [
   # plik zrodlowy, sciezka wyjsciowa, klucz menu
