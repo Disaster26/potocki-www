@@ -4,7 +4,7 @@
 import os, json, re
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 SRC = os.path.join(ROOT, '_src')
-V = '3'  # wersja plikow css/js (cache)
+V = '4'  # wersja plikow css/js (cache)
 
 STRONY = [
   # plik zrodlowy, sciezka wyjsciowa, klucz menu
@@ -30,13 +30,13 @@ def szablon(meta, tresc, klucz, R):
     menu = ''.join(f'<a href="{R}{h}"{" aria-current=\"page\"" if k == klucz else ""}>{n}</a>' for k, h, n in MENU)
     panel = ''.join(f'<a class="poz" href="{R}{h}"{" aria-current=\"page\"" if k == klucz else ""}>{n}</a>' for k, h, n in MENU)
     cta = meta.get('cta_naglowek')
-    cta_h = f'<a class="btn btn-zloty btn-maly gora-cta" href="{R}{cta[1]}">{cta[0]}</a>' if cta else ''
+    cta_h = f'<a class="btn btn-glowny btn-maly gora-cta" href="{R}{cta[1]}">{cta[0]}</a>' if cta else ''
     mob = meta.get('cta_mob')
-    mob_h = f'<div class="mob" aria-hidden="true"><a class="btn btn-linia-j" href="tel:{meta.get('tel_mob', TEL)}" data-ev="click_tel">Zadzwoń</a><a class="btn btn-zloty" href="{R}{mob[1]}" tabindex="-1">{mob[0]}</a></div>' if mob else ''
+    mob_h = f'<div class="mob" aria-hidden="true"><a class="btn btn-obrys" href="tel:{meta.get('tel_mob', TEL)}" data-ev="click_tel" tabindex="-1">Zadzwoń</a><a class="btn btn-glowny" href="{R}{mob[1]}" tabindex="-1">{mob[0]}</a></div>' if mob else ''
     preload = ''
     if meta.get('hero'):
         h = meta['hero']
-        preload = f'<link rel="preload" as="image" href="{R}assets/img/{h}-1600.webp" imagesrcset="{R}assets/img/{h}-800.webp 800w, {R}assets/img/{h}-1600.webp 1600w" imagesizes="100vw">'
+        preload = f'<link rel="preload" as="image" href="{R}assets/img/{h}-1600.webp" imagesrcset="{R}assets/img/{h}-800.webp 800w, {R}assets/img/{h}-1600.webp 1600w" imagesizes="(max-width:760px) 100vw, 60vw">'
     ld = meta.get('jsonld', [])
     ld_h = ''.join(f'<script type="application/ld+json">{json.dumps(LD[x], ensure_ascii=False, separators=(",", ":"))}</script>' for x in ld)
     skrypty = ''.join(f'<script src="{R}{s}?v={V}"></script>' for s in meta.get('skrypty', []))
@@ -57,11 +57,11 @@ def szablon(meta, tresc, klucz, R):
 <meta property="og:title" content="{meta["title"]}">
 <meta property="og:description" content="{meta["description"]}">
 <meta property="og:image" content="{R}assets/img/{meta.get("og", "fasada")}-1600.webp">
-<meta name="theme-color" content="#0e1c29">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/png" href="{R}assets/img/favicon.png">
 <link rel="apple-touch-icon" href="{R}assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600&display=swap" rel="stylesheet">
 {leaflet_css}
 <link rel="stylesheet" href="{R}assets/css/style.css?v={V}">
 {preload}
@@ -73,7 +73,7 @@ def szablon(meta, tresc, klucz, R):
 <a class="pomin" href="#tresc">Przejdź do treści</a>
 <header class="gora">
   <div class="wrap gora-in">
-    <a class="logo" href="{R}" aria-label="Potocki Dwór - strona główna"><img src="{R}assets/img/logo-biale.png" width="720" height="238" alt="Potocki Hotel - Restauracja"></a>
+    <a class="logo" href="{R}" aria-label="Potocki Dwór - strona główna"><img src="{R}assets/img/logo-granat.png" width="720" height="237" alt="Potocki Hotel - Restauracja"></a>
     <nav class="menu" aria-label="Menu główne">{menu}</nav>
     <div class="gora-akcje">
       <a class="tel" href="tel:{TEL}" data-ev="click_tel" aria-label="Zadzwoń: {TEL_T}">{IKONA_TEL}<span>{TEL_T}</span></a>
@@ -91,17 +91,21 @@ def szablon(meta, tresc, klucz, R):
 </main>
 <footer class="stopka">
   <div class="wrap stopka-in">
-    <div class="stopka-l">
+    <div class="stopka-marka">
       <img class="stopka-logo" src="{R}assets/img/logo-biale.png" width="720" height="238" alt="Potocki Hotel - Restauracja" loading="lazy">
-      <p>Potok Wielki 83A, 28-300 Jędrzejów</p>
-      <p><a href="tel:{TEL}" data-ev="click_tel">{TEL_T}</a> · <a href="mailto:{MAIL}">{MAIL}</a></p>
-      <p class="social"><a href="https://www.facebook.com/PotockiDwor" target="_blank" rel="noopener">Facebook</a> · <a href="https://www.instagram.com/potocki_dwor/" target="_blank" rel="noopener">Instagram</a></p>
+      <p>Potok Wielki 83A<br>28-300 Jędrzejów</p>
+      <p class="stopka-godz">Restauracja i hotel: codziennie <span class="nw">12:00-22:00</span>, w niedzielę <span class="nw">12:00-21:00</span></p>
+    </div>
+    <div class="stopka-kontakty">
+      <div><h2>Recepcja</h2><p><a href="tel:{TEL}" data-ev="click_tel">{TEL_T}</a></p><p><a href="mailto:{MAIL}">{MAIL}</a></p></div>
+      <div><h2>Przyjęcia</h2><p>K. Wieczorek</p><p><a href="tel:+48784043570" data-ev="click_tel">784 043 570</a></p><p><a href="mailto:k.wieczorek@potockidwor.pl">k.wieczorek@potockidwor.pl</a></p></div>
+      <div><h2>Biznes</h2><p>M. Pronobis</p><p><a href="tel:+48532162301" data-ev="click_tel">532 162 301</a></p><p><a href="mailto:m.pronobis@potockidwor.pl">m.pronobis@potockidwor.pl</a></p></div>
     </div>
     <nav class="stopka-menu" aria-label="Menu w stopce"><a href="{R}">Strona główna</a>{"".join(f'<a href="{R}{h}">{n}</a>' for k, h, n in MENU)}</nav>
   </div>
   <div class="wrap stopka-dol">
     <p>© Potocki Dwór · ECOTUR Sp. z o.o.</p>
-    <p><button type="button" class="link-cookies" data-cookies-ustawienia hidden>Ustawienia plików cookies</button> <span class="robocza">Wersja robocza strony - podgląd dla Potockiego Dworu.</span></p>
+    <p class="social"><a href="https://www.facebook.com/PotockiDwor" target="_blank" rel="noopener">Facebook</a><a href="https://www.instagram.com/potocki_dwor/" target="_blank" rel="noopener">Instagram</a><button type="button" class="link-cookies" data-cookies-ustawienia hidden>Ustawienia plików cookies</button></p>
   </div>
 </footer>
 {mob_h}
