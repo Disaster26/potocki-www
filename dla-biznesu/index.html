@@ -19,10 +19,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="../assets/css/style.css?v=2">
+<link rel="stylesheet" href="../assets/css/style.css?v=3">
 <link rel="preload" as="image" href="../assets/img/kawa-1600.webp" imagesrcset="../assets/img/kawa-800.webp 800w, ../assets/img/kawa-1600.webp 1600w" imagesizes="100vw">
 
-<script src="../assets/js/config.js?v=2"></script>
+<script src="../assets/js/config.js?v=3"></script>
 <!-- POMIAR: GA4 + Meta Pixel ładowane przez assets/js/app.js (zgody, Consent Mode v2) dopiero po wpisaniu identyfikatorów w config.js -->
 </head>
 <body data-strona="biznes" data-root="../">
@@ -206,13 +206,15 @@
   </div>
 </section>
 
-<section class="sekcja" id="goscili" aria-labelledby="h-gosc">
+<section class="sekcja goscili" id="goscili" aria-labelledby="h-gosc">
   <div class="wrap">
     <h2 id="h-gosc" class="naglowek">Gościli u nas</h2>
-    <!-- DO UZUPEŁNIENIA: logotypy i krótkie opinie klientów biznesowych (config.js -> goscili). Po uzupełnieniu zaślepka znika. -->
-    <div class="goscili" id="goscili-lista" hidden></div>
-    <div class="zaslepka" data-goscili-zaslepka><b>Do uzupełnienia: referencje firm</b>Tu pojawią się logotypy firm, które organizowały u nas szkolenia i imprezy, wraz z krótkimi opiniami. Sekcja jest gotowa, czeka na materiały od Potockiego Dworu.</div>
   </div>
+  <!--GOSCILI (generuje _narzedzia/goscili.py)-->
+    <div class="goscili-pas">
+      <div class="goscili-tor"><ul class="goscili-lista" aria-label="Firmy i instytucje, które u nas gościły"><li><img src="../assets/img/goscili/universal.svg" alt="Universal" width="71" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/bnp-paribas.webp" alt="BNP Paribas" width="153" height="32" style="--h:32" decoding="async"></li><li><img src="../assets/img/goscili/quickpack.svg" alt="Quickpack" width="73" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/pge.webp" alt="PGE" width="93" height="48" style="--h:48" decoding="async"></li><li><img src="../assets/img/goscili/sefako.webp" alt="Sefako" width="77" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/de-heus.svg" alt="De Heus" width="64" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/famet.webp" alt="Famet" width="112" height="40" style="--h:40" decoding="async"></li><li><img src="../assets/img/goscili/kasa-stefczyka.webp" alt="Kasa Stefczyka" width="160" height="44" style="--h:44" decoding="async"></li><li><img src="../assets/img/goscili/vanstar.svg" alt="Vanstar" width="178" height="28" style="--h:28" decoding="async"></li><li><img src="../assets/img/goscili/miasto-jedrzejow.webp" alt="Urząd Miasta Jędrzejów" width="135" height="41" style="--h:41" decoding="async"></li><li><img src="../assets/img/goscili/sano.svg" alt="Sano" width="49" height="49" style="--h:49" decoding="async"></li><li><img src="../assets/img/goscili/ren-mar.webp" alt="Ren-Mar" width="153" height="36" style="--h:36" decoding="async"></li><li><img src="../assets/img/goscili/iglomen.svg" alt="Iglomen" width="166" height="34" style="--h:34" decoding="async"></li><li><img src="../assets/img/goscili/bs-jedrzejow.webp" alt="Świętokrzyski Bank Spółdzielczy w Jędrzejowie" width="189" height="29" style="--h:29" decoding="async"></li><li><img src="../assets/img/goscili/flora-praszka.webp" alt="Flora Praszka" width="114" height="44" style="--h:44" decoding="async"></li></ul><ul class="goscili-lista goscili-kopia" aria-hidden="true"><li><img src="../assets/img/goscili/universal.svg" alt="" width="71" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/bnp-paribas.webp" alt="" width="153" height="32" style="--h:32" decoding="async"></li><li><img src="../assets/img/goscili/quickpack.svg" alt="" width="73" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/pge.webp" alt="" width="93" height="48" style="--h:48" decoding="async"></li><li><img src="../assets/img/goscili/sefako.webp" alt="" width="77" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/de-heus.svg" alt="" width="64" height="58" style="--h:58" decoding="async"></li><li><img src="../assets/img/goscili/famet.webp" alt="" width="112" height="40" style="--h:40" decoding="async"></li><li><img src="../assets/img/goscili/kasa-stefczyka.webp" alt="" width="160" height="44" style="--h:44" decoding="async"></li><li><img src="../assets/img/goscili/vanstar.svg" alt="" width="178" height="28" style="--h:28" decoding="async"></li><li><img src="../assets/img/goscili/miasto-jedrzejow.webp" alt="" width="135" height="41" style="--h:41" decoding="async"></li><li><img src="../assets/img/goscili/sano.svg" alt="" width="49" height="49" style="--h:49" decoding="async"></li><li><img src="../assets/img/goscili/ren-mar.webp" alt="" width="153" height="36" style="--h:36" decoding="async"></li><li><img src="../assets/img/goscili/iglomen.svg" alt="" width="166" height="34" style="--h:34" decoding="async"></li><li><img src="../assets/img/goscili/bs-jedrzejow.webp" alt="" width="189" height="29" style="--h:29" decoding="async"></li><li><img src="../assets/img/goscili/flora-praszka.webp" alt="" width="114" height="44" style="--h:44" decoding="async"></li></ul></div>
+    </div>
+    <!--/GOSCILI-->
 </section>
 
 <section class="sekcja ciemna" id="zapytanie" aria-labelledby="h-zap">
@@ -257,6 +259,6 @@
 <dialog class="lightbox" id="lightbox" aria-label="Powiększone zdjęcie"><button type="button" class="lb-zamknij" aria-label="Zamknij">×</button><button type="button" class="lb-nav lb-pop" aria-label="Poprzednie zdjęcie">‹</button><img alt=""><button type="button" class="lb-nav lb-nast" aria-label="Następne zdjęcie">›</button><p class="lb-opis"></p></dialog>
 
 
-<script src="../assets/js/app.js?v=2"></script>
+<script src="../assets/js/app.js?v=3"></script>
 </body>
 </html>

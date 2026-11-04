@@ -292,10 +292,4 @@
     }
   })();
 
-  /* ---------- Goscili u nas (Dla biznesu) ---------- */
-  (function () {
-    var box = $('#goscili-lista'), g = CFG.goscili || []; if (!box || !g.length) return;
-    box.innerHTML = g.map(function (x) { return '<figure>' + (x.logo ? '<img src="' + ROOT + esc(x.logo) + '" alt="' + esc(x.firma) + '" loading="lazy">' : '<b>' + esc(x.firma) + '</b>') + (x.opinia ? '<blockquote>' + esc(x.opinia) + '</blockquote>' : '') + '</figure>'; }).join('');
-    box.hidden = false; var z = $('[data-goscili-zaslepka]'); if (z) z.hidden = true;
-  })();
 })();

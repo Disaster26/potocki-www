@@ -286,11 +286,22 @@ p{margin:0}
 .kontakt-pierwszy{padding:clamp(40px,6vw,72px) 0}
 .kontakt-pierwszy h1{font-size:clamp(40px,5vw,64px)}
 
-/* goscili u nas */
-.goscili{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
-.goscili figure{margin:0}
-.goscili img{height:48px;width:auto;object-fit:contain}
-.goscili blockquote{margin:12px 0 0;font-size:16px;color:var(--szary)}
+/* goscili u nas: przewijany pasek logotypow (lista zdublowana, przesuniecie o -50%) */
+.goscili .naglowek{margin-bottom:30px}
+.goscili-pas{overflow:hidden;padding:6px 0;background:var(--krem);max-width:1600px;margin:0 auto;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.goscili-tor{display:flex;width:max-content;animation:goscili-przewin 70s linear infinite}
+.goscili-pas:hover .goscili-tor,.goscili-pas:focus-within .goscili-tor{animation-play-state:paused}
+.goscili-lista{display:flex;align-items:center;gap:72px;margin:0;background:var(--krem);padding:0 72px 0 0;list-style:none}
+.goscili-lista li{flex:none;display:flex;align-items:center;height:64px}
+.goscili-lista img{height:calc(var(--h) * 1px);width:auto;max-width:none;filter:grayscale(1) contrast(1.15);opacity:.7;mix-blend-mode:multiply;transition:filter .3s ease,opacity .3s ease}
+@media (hover:hover){.goscili-lista li:hover img{filter:none;opacity:1}}
+@keyframes goscili-przewin{to{transform:translate3d(-50%,0,0)}}
+@media (prefers-reduced-motion:reduce){
+  .goscili-pas{-webkit-mask-image:none;mask-image:none}
+  .goscili-tor{animation:none;width:auto}
+  .goscili-lista{flex-wrap:wrap;justify-content:center;gap:28px 48px;padding:0}
+  .goscili-kopia{display:none}
+}
 
 /* stopka */
 .stopka{background:#08121b;color:#aeb8c3;padding:48px 0 32px;font-size:15px}
@@ -331,11 +342,15 @@ p{margin:0}
   .planer{grid-template-columns:minmax(0,1fr)}
   .sale,.sale-4{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .galeria{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .kontrolna,.goscili{grid-template-columns:minmax(0,1fr)}
+  .kontrolna{grid-template-columns:minmax(0,1fr)}
   .drinki-foto{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 /* telefon */
 @media (max-width:760px){
+  .goscili-lista{gap:44px;padding-right:44px}
+  .goscili-lista li{height:52px}
+  .goscili-lista img{height:calc(var(--h) * .78px)}
+  .goscili-tor{animation-duration:55s}
   :root{--gora:64px}
   body{font-size:16.5px}
   .wrap,.hero-in{width:min(var(--szer),100% - 32px)}
@@ -406,3 +421,4 @@ p{margin:0}
   .hero-cta{margin-top:24px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce) and (max-width:760px){.goscili-lista{gap:16px 34px}}
