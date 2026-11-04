@@ -28,9 +28,5 @@ window.POTOCKI_CONFIG = {
   ga4: '',        /* np. G-XXXXXXXXXX */
   metaPixel: '',  /* np. 123456789012345 */
 
-  social: { facebook: 'https://www.facebook.com/PotockiDwor', instagram: 'https://www.instagram.com/potocki_dwor/' },
-
-  /* DO UZUPEŁNIENIA (klient): "Gościli u nas" na podstronie Dla biznesu.
-     Pozycja: { firma: 'Nazwa', logo: 'assets/img/goscili/firma.png', opinia: 'Krótka opinia.' } */
-  goscili: []
+  social: { facebook: 'https://www.facebook.com/PotockiDwor', instagram: 'https://www.instagram.com/potocki_dwor/' }
 };
