@@ -66,6 +66,27 @@
     u(); window.addEventListener('scroll', u, { passive: true });
   })();
 
+  /* ---------- pokaz zdjec w hero glownej (co ok. 6 s; stop: reduced motion, ukryta karta, wybor reczny) ---------- */
+  (function () {
+    var f = $('[data-pokaz]'); if (!f) return;
+    var zdj = $$('img', f), wsk = $$('.pokaz-wsk button', f), i = 0, t = null, reczny = false;
+    var spokoj = matchMedia('(prefers-reduced-motion: reduce)');
+    var pokaz = function (n) {
+      i = (n + zdj.length) % zdj.length;
+      var im = zdj[i]; if (im.loading === 'lazy') im.loading = 'eager';
+      zdj.forEach(function (x, k) { x.classList.toggle('aktywne', k === i); });
+      wsk.forEach(function (b, k) { b.setAttribute('aria-current', k === i); });
+    };
+    var stop = function () { clearInterval(t); t = null; };
+    var start = function () { stop(); if (reczny || spokoj.matches || document.hidden) return; t = setInterval(function () { pokaz(i + 1); }, 6000); };
+    wsk.forEach(function (b, k) { b.addEventListener('click', function () { reczny = true; stop(); pokaz(k); }); });
+    document.addEventListener('visibilitychange', start);
+    if (spokoj.addEventListener) spokoj.addEventListener('change', start);
+    /* kolejne zdjecia dociagamy po zaladowaniu strony (pierwsze ma preload) */
+    window.addEventListener('load', function () { zdj.slice(1).forEach(function (x) { x.loading = 'eager'; }); });
+    start();
+  })();
+
   /* ---------- menu mobilne ---------- */
   (function () {
     var h = $('.ham'), p = $('#panel'); if (!h || !p) return;

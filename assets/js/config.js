@@ -25,7 +25,8 @@ window.POTOCKI_CONFIG = {
   kwHotel: { kod: '', link: '' },
 
   /* Pomiar - konta należą do klienta. Po wpisaniu identyfikatorów pojawi się baner zgód (Consent Mode v2). */
-  ga4: '',        /* np. G-XXXXXXXXXX */
+  ga4: '',        /* identyfikator pomiaru G-XXXXXXXXXX (GA4 > Administracja > Strumienie danych > strumień witryny).
+                     Uwaga: 539277159 od klienta (04.11) to ID usługi (property), NIE identyfikator pomiaru - nie wpisywać. */
   metaPixel: '',  /* np. 123456789012345 */
 
   social: { facebook: 'https://www.facebook.com/PotockiDwor', instagram: 'https://www.instagram.com/potocki_dwor/' }
