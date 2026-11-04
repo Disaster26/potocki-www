@@ -1,8 +1,11 @@
 # Przygotowanie zdjec: oryginaly (poza repo) -> assets/img/*.webp (1600/800 px, dania takze 1200/600).
-# Uzycie: python -I _narzedzia/zdjecia.py "C:/Users/Admin/Downloads/PotockiDwor_dysk_2210"
+# Uzycie: python -I _narzedzia/zdjecia.py "C:/Users/Admin/Downloads/PotockiDwor_dysk_2210" [--dania]
+#   --dania: tylko zdjecia dan (z korekta balansu bieli)
 import sys, os
+import numpy as np
 from PIL import Image, ImageOps
 SRC = sys.argv[1]
+TYLKO_DANIA = '--dania' in sys.argv
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'img')
 M = {
  # obiekt i hotel
@@ -50,12 +53,25 @@ def zapisz(im, nazwa, dl, q=78):
     im.save(os.path.join(OUT, f'{nazwa}-{dl}.webp'), 'WEBP', quality=q, method=6)
 def otworz(p):
     im = Image.open(p); im = ImageOps.exif_transpose(im); return im.convert('RGB')
+def popraw_biel(im):
+    # Zdjecia dan maja liliowy zafarb obrusu (R i B ponad G). Neutralizacja wg jasnych, malo nasyconych pikseli
+    # (obrus) do cieplej szarosci R:G:B = 1 : 0.975 : 0.94, plus lekkie rozjasnienie obrusu do ok. 214.
+    a = np.asarray(im).astype(np.float32)
+    mini = np.asarray(im.resize((300, round(300 * im.height / im.width)))).astype(np.float32)
+    L = mini.mean(2); s = mini.max(2) - mini.min(2)
+    m = (L > 140) & (s < 45)
+    if m.mean() < 0.05: return im
+    sr = mini[m].mean(0)
+    cel = np.array([1.0, 0.975, 0.94]); cel = cel * (max(sr.mean(), 205) * 1.04 / cel.mean())
+    a = np.clip(a * (cel / sr), 0, 255)
+    return Image.fromarray(a.astype(np.uint8))
 os.makedirs(OUT, exist_ok=True)
-for n, p in M.items():
+for n, p in ({} if TYLKO_DANIA else M).items():
     im = otworz(os.path.join(SRC, p)); zapisz(im, n, 1600); zapisz(im, n, 800)
-im = otworz(os.path.join(SRC, M['fasada'])); zapisz(im, 'fasada', 2000)
+if not TYLKO_DANIA:
+    im = otworz(os.path.join(SRC, M['fasada'])); zapisz(im, 'fasada', 2000)
 for n, p in DANIA.items():
-    im = otworz(os.path.join(SRC, 'nowe dania', p)); zapisz(im, n, 1200); zapisz(im, n, 400, 74)
-for i, f in enumerate([f for f in DRINKI if f.lower().endswith('.jpg')], 1):
+    im = popraw_biel(otworz(os.path.join(SRC, 'nowe dania', p))); zapisz(im, n, 1200); zapisz(im, n, 400, 74)
+for i, f in enumerate([] if TYLKO_DANIA else [f for f in DRINKI if f.lower().endswith('.jpg')], 1):
     im = otworz(os.path.join(SRC, 'Drinki', f)); zapisz(im, f'drink-{i:02d}', 1200); zapisz(im, f'drink-{i:02d}', 400, 74)
 print('ok', len(os.listdir(OUT)))

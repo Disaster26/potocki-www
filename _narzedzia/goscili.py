@@ -1,4 +1,7 @@
-# Pasek "Gościli u nas" (Dla biznesu): przygotowuje logotypy i wstawia listę do _src/biznes.html.
+# "Gościli u nas": przygotowuje logotypy i wstawia je do stron:
+#   _src/biznes.html - statyczna siatka wszystkich logotypów (znaczniki <!--GOSCILI-->),
+#   _src/start.html  - pasek 8 najbardziej rozpoznawalnych pod hero (znaczniki <!--GOSCILI8-->).
+# Logotypy pokazywane są jednobarwnie (CSS: grayscale + brightness(--b) + contrast), kolor po najechaniu.
 # Oryginały (pobrane z oficjalnych stron firm) leżą w _src/goscili_oryg/ (poza repo).
 # Uzycie: python -I _narzedzia/goscili.py, potem python -I _narzedzia/build.py
 import os, re, math
@@ -10,24 +13,28 @@ OUT = os.path.join(ROOT, 'assets', 'img', 'goscili')
 GRANAT = '#0e1c29'
 H2X = 128  # wysokość pliku rastrowego (2x największej wysokości na stronie)
 
-# kolejność = kolejność na pasku; (plik oryginału, nazwa pliku wyjściowego, alt, korekta wysokości optycznej)
+# kolejność = kolejność w siatce; (plik oryginału, nazwa pliku wyjściowego, alt, korekta wysokości optycznej,
+#   jasność przed progowaniem do jednego koloru: niższa = jasne kolory logo ciemnieją, wyższa = jasne tło znika)
 LOGA = [
-  ('universal.svg', 'universal', 'Universal', 0.92),
-  ('bnp.png', 'bnp-paribas', 'BNP Paribas', 0.95),
-  ('quickpack.svg', 'quickpack', 'Quickpack', 0.95),
-  ('pge.png', 'pge', 'PGE', 0.9),
-  ('sefako.png', 'sefako', 'Sefako', 1.05),
-  ('deheus.svg', 'de-heus', 'De Heus', 1.0),
-  ('famet.png', 'famet', 'Famet', 0.9),
-  ('stefczyk.png', 'kasa-stefczyka', 'Kasa Stefczyka', 1.12),
-  ('vanstar.svg', 'vanstar', 'Vanstar', 0.92),
-  ('jedrzejow-baner.png', 'miasto-jedrzejow', 'Urząd Miasta Jędrzejów', 1.0),
-  ('sano.svg', 'sano', 'Sano', 0.66),
-  ('renmar.png', 'ren-mar', 'Ren-Mar', 1.0),
-  ('iglomen.svg', 'iglomen', 'Iglomen', 1.0),
-  ('bs.png', 'bs-jedrzejow', 'Świętokrzyski Bank Spółdzielczy w Jędrzejowie', 1.0),
-  ('flora-biale.png', 'flora-praszka', 'Flora Praszka', 0.95),
+  ('bnp.png', 'bnp-paribas', 'BNP Paribas', 0.95, .85),
+  ('pge.png', 'pge', 'PGE', 0.9, .75),
+  ('deheus.svg', 'de-heus', 'De Heus', 1.0, .6),
+  ('stefczyk.png', 'kasa-stefczyka', 'Kasa Stefczyka', 1.12, .85),
+  ('universal.svg', 'universal', 'Universal', 0.92, .85),
+  ('quickpack.svg', 'quickpack', 'Quickpack', 0.95, .85),
+  ('famet.png', 'famet', 'Famet', 0.9, .85),
+  ('sefako.png', 'sefako', 'Sefako', 1.05, .55),
+  ('vanstar.svg', 'vanstar', 'Vanstar', 0.92, .85),
+  ('jedrzejow-baner.png', 'miasto-jedrzejow', 'Urząd Miasta Jędrzejów', 1.0, .85),
+  ('sano.svg', 'sano', 'Sano', 0.95, 1.15),
+  ('renmar.png', 'ren-mar', 'Ren-Mar', 1.0, .5),
+  ('iglomen.svg', 'iglomen', 'Iglomen', 1.0, .85),
+  ('bs.png', 'bs-jedrzejow', 'Świętokrzyski Bank Spółdzielczy w Jędrzejowie', 1.0, .7),
+  ('flora-biale.png', 'flora-praszka', 'Flora Praszka', 0.95, .85),
 ]
+# pasek na stronie głównej (brief 04.11): 8 najbardziej rozpoznawalnych
+NA_GLOWNA = ['bnp-paribas', 'pge', 'de-heus', 'kasa-stefczyka', 'universal', 'quickpack', 'famet', 'sefako']
+# Komenda Powiatowa Policji w Jędrzejowie: bez logotypu (godło tylko za zgodą), pominięta.
 # logotypy jednobarwne białe (na stronie firmy na ciemnym tle) -> ten sam kształt w kolorze granatowym
 NA_GRANAT = {'universal.svg', 'flora-biale.png'}
 
@@ -63,23 +70,28 @@ def raster(plik, nazwa):
 
 
 os.makedirs(OUT, exist_ok=True)
-pozycje = []
-for plik, nazwa, alt, kor in LOGA:
+pozycje = {}
+for plik, nazwa, alt, kor, jasn in LOGA:
     f, a = (svg if plik.endswith('.svg') else raster)(plik, nazwa)
     h = wysokosc(a, kor); w = round(h * a)
-    pozycje.append(f'<li><img src="{{{{R}}}}assets/img/goscili/{f}" alt="{alt}" width="{w}" height="{h}" style="--h:{h}" decoding="async"></li>')
+    pozycje[nazwa] = f'<li><img src="{{{{R}}}}assets/img/goscili/{f}" alt="{alt}" width="{w}" height="{h}" style="--h:{h};--b:{jasn}" loading="lazy" decoding="async"></li>'
     print(f'{f:28} {a:5.2f}  {w}x{h}  {os.path.getsize(os.path.join(OUT, f)) // 1024} kB')
 
-lista = ''.join(pozycje)
-blok = ('<!--GOSCILI (generuje _narzedzia/goscili.py)-->\n'
-        '    <div class="goscili-pas">\n'
-        f'      <div class="goscili-tor"><ul class="goscili-lista" aria-label="Firmy i instytucje, które u nas gościły">{lista}</ul>'
-        f'<ul class="goscili-lista goscili-kopia" aria-hidden="true">{re.sub(r'alt="[^"]*"', 'alt=""', lista)}</ul></div>\n'
-        '    </div>\n'
-        '    <!--/GOSCILI-->')
-p = os.path.join(ROOT, '_src', 'biznes.html')
-t = open(p, encoding='utf-8').read()
-t, n = re.subn(r'<!--GOSCILI.*?<!--/GOSCILI-->', lambda m: blok, t, flags=re.S)
-assert n == 1, 'brak znacznikow <!--GOSCILI--> w _src/biznes.html'
-open(p, 'w', encoding='utf-8', newline='\n').write(t)
+
+
+def wstaw(plik, znacznik, blok):
+    p = os.path.join(ROOT, '_src', plik)
+    t = open(p, encoding='utf-8').read()
+    t, n = re.subn(rf'<!--{znacznik} .*?<!--/{znacznik}-->', lambda m: blok, t, flags=re.S)
+    assert n == 1, f'brak znacznikow <!--{znacznik} ...--> w _src/{plik}'
+    open(p, 'w', encoding='utf-8', newline='\n').write(t)
+
+
+wstaw('biznes.html', 'GOSCILI', '<!--GOSCILI (generuje _narzedzia/goscili.py)-->\n'
+      f'    <ul class="goscili-siatka" aria-label="Firmy i instytucje, które u nas gościły">{"".join(pozycje.values())}</ul>\n'
+      '    <!--/GOSCILI-->')
+wstaw('start.html', 'GOSCILI8', '<!--GOSCILI8 (generuje _narzedzia/goscili.py)-->\n'
+      f'      <ul class="goscili-rzad" aria-label="Wybrane firmy i instytucje, które u nas gościły">{"".join(pozycje[n] for n in NA_GLOWNA)}'
+      '<li class="goscili-link"><a href="{{R}}dla-biznesu/#goscili">Oferta dla firm</a></li></ul>\n'
+      '      <!--/GOSCILI8-->')
 print('OK:', len(LOGA), 'logotypów')

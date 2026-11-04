@@ -50,13 +50,20 @@
     function baner() {
       var b = document.createElement('div'); b.className = 'zgody'; b.setAttribute('role', 'dialog'); b.setAttribute('aria-label', 'Zgody na pliki cookies');
       b.innerHTML = '<p>Używamy plików cookies do statystyk odwiedzin (Google Analytics) i mierzenia skuteczności reklam (Meta). Możesz się zgodzić albo zostawić tylko niezbędne.</p>' +
-        '<div class="akcje"><button type="button" class="btn btn-granat" data-z="1">Zgadzam się</button><button type="button" class="btn btn-linia-c" data-z="0">Tylko niezbędne</button></div>';
+        '<div class="akcje"><button type="button" class="btn btn-glowny" data-z="1">Zgadzam się</button><button type="button" class="btn btn-obrys" data-z="0">Tylko niezbędne</button></div>';
       b.addEventListener('click', function (e) { var x = e.target.closest('[data-z]'); if (!x) return; var z = x.getAttribute('data-z') === '1'; pamiec.set('potocki_zgoda', z ? '1' : '0'); zastosuj(z); b.remove(); });
       document.body.appendChild(b);
     }
     var zap = pamiec.get('potocki_zgoda');
     if (zap === null) baner(); else zastosuj(zap === '1');
     $$('[data-cookies-ustawienia]').forEach(function (x) { x.hidden = false; x.addEventListener('click', function () { if (!$('.zgody')) baner(); }); });
+  })();
+
+  /* ---------- naglowek: cienka linia po przewinieciu ---------- */
+  (function () {
+    var g = $('.gora'); if (!g) return;
+    var u = function () { g.classList.toggle('przewiniete', scrollY > 8); };
+    u(); window.addEventListener('scroll', u, { passive: true });
   })();
 
   /* ---------- menu mobilne ---------- */
@@ -105,17 +112,29 @@
     var html = '', chipy = '';
     M.forEach(function (k) {
       chipy += '<a href="#kat-' + k.id + '">' + esc(k.nazwa) + '</a>';
-      html += '<section class="kat" id="kat-' + k.id + '" aria-labelledby="h-' + k.id + '"><h3 id="h-' + k.id + '">' + esc(k.nazwa) + '</h3>';
+      html += '<section class="kat" id="kat-' + k.id + '" aria-labelledby="h-' + k.id + '"><h3 id="h-' + k.id + '"><button type="button" class="kat-przel" aria-expanded="true" aria-controls="kt-' + k.id + '">' + esc(k.nazwa) + '<span class="kat-ile">' + k.pozycje.filter(function (p) { return !p.grupa; }).length + '</span></button></h3><div class="kat-tresc" id="kt-' + k.id + '">';
       if (k.zdjecia) html += '<div class="drinki-foto" data-lb-grupa>' + k.zdjecia.map(function (z) { return '<button type="button" data-lb data-src="' + IMG + z + '-1200.webp" data-opis="Drinki z baru Potockiego Dworu"><img src="' + IMG + z + '-400.webp" alt="Drink z baru Potockiego Dworu" loading="lazy" width="300" height="400"></button>'; }).join('') + '</div>';
       html += '<div class="dania" data-lb-grupa>';
       k.pozycje.forEach(function (p) {
-        if (p.grupa) { html += '<h4 class="kat-grupa">' + esc(p.grupa) + (p.uwaga ? ' <span style="font-weight:400;letter-spacing:0;color:var(--szary)">(' + esc(p.uwaga) + ')</span>' : '') + '</h4>'; return; }
+        if (p.grupa) { html += '<h4 class="kat-grupa">' + esc(p.grupa) + (p.uwaga ? ' <span class="kat-uwaga">(' + esc(p.uwaga) + ')</span>' : '') + '</h4>'; return; }
         var f = p.img ? '<button type="button" class="danie-foto" data-lb data-src="' + IMG + p.img + '-1200.webp" data-opis="' + esc(p.n) + (p.c ? ' - ' + esc(p.c) : '') + '" aria-label="Zdjęcie: ' + esc(p.n) + '"><img src="' + IMG + p.img + '-400.webp" alt="' + esc(p.n) + '" loading="lazy" width="92" height="92"></button>' : '';
         html += '<article class="danie' + (p.img ? ' z-foto' : '') + '">' + f + '<h4>' + esc(p.n) + '</h4><span class="cena">' + esc(p.c) + '</span>' + (p.s ? '<p class="sklad">' + esc(p.s) + '</p>' : '') + '</article>';
       });
-      html += '</div></section>';
+      html += '</div></div></section>';
     });
     box.innerHTML = html;
+    /* telefon: akordeon (pierwsza kategoria otwarta), komputer: wszystkie kategorie rozwiniete + zakladki */
+    var tel = matchMedia('(max-width:760px)');
+    var katy = $$('.kat', box);
+    var rozwin = function (s, o) { s.classList.toggle('zwin', !o); $('.kat-przel', s).setAttribute('aria-expanded', o); };
+    var trybTel = function () { katy.forEach(function (s, i) { rozwin(s, tel.matches ? i === 0 : true); }); };
+    trybTel(); tel.addEventListener('change', trybTel);
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('.kat-przel'); if (!b || !tel.matches) return;
+      var s = b.closest('.kat'), o = s.classList.contains('zwin'); rozwin(s, o);
+      if (o) { var r = s.getBoundingClientRect(); if (r.top < 60) s.scrollIntoView({ block: 'start' }); }
+    });
+    if (location.hash && /^#kat-/.test(location.hash)) { var h = $(location.hash); if (h) rozwin(h, true); }
     if (kat) {
       kat.innerHTML = chipy;
       var linki = $$('a', kat), sekcje = $$('.kat', box);
@@ -172,7 +191,7 @@
       var adres = adresDla(rodzaj);
       var mailto = 'mailto:' + adres + '?subject=' + encodeURIComponent(temat) + '&body=' + encodeURIComponent(tresc + '\n\n(wysłano ze strony potockidwor.pl)');
       wynik.innerHTML = '<h4>Zapytanie gotowe</h4><p>Wersja robocza strony: po uruchomieniu formularz wyśle je automatycznie na ' + esc(adres) + '. Teraz można je wysłać z programu pocztowego.</p><pre>' + esc(tresc) + '</pre>' +
-        '<div class="akcje"><a class="btn btn-granat" href="' + esc(mailto) + '">Wyślij e-mailem</a><button type="button" class="btn btn-linia-c" data-kopiuj>Skopiuj treść</button></div>';
+        '<div class="akcje"><a class="btn btn-glowny" href="' + esc(mailto) + '">Wyślij e-mailem</a><button type="button" class="btn btn-obrys" data-kopiuj>Skopiuj treść</button></div>';
       wynik.hidden = false;
       var kop = $('[data-kopiuj]', wynik);
       kop.addEventListener('click', function () { if (navigator.clipboard) navigator.clipboard.writeText(tresc).then(function () { kop.textContent = 'Skopiowano'; }).catch(function () {}); });
@@ -213,7 +232,7 @@
         var d = new Date(r, m, n), prze = d < dzis, z = !prze && czyZajety(d), w = st.data && +st.data === +d;
         h += '<button type="button" data-d="' + n + '" class="' + (z ? 'zaj ' : '') + (d.getDay() === 6 ? 'sob ' : '') + (w ? 'wyb' : '') + '"' + (prze ? ' disabled' : '') + (z ? ' aria-disabled="true" title="termin zajęty"' : '') + ' aria-label="' + fmt(d) + (z ? ', termin zajęty' : '') + '">' + n + '</button>';
       }
-      h += '</div><div class="kal-leg"><span><i style="background:#0e1c29"></i>wybrany dzień</span>' + (zajete ? '<span><i style="background:#d8d0c1"></i>zajęty (przekreślony)</span>' : '') + '</div>';
+      h += '</div><div class="kal-leg"><span><i class="l-wyb"></i>wybrany dzień</span>' + (zajete ? '<span><i class="l-zaj"></i>zajęty (przekreślony)</span>' : '') + '</div>';
       kal.innerHTML = h;
     }
     kal.addEventListener('click', function (e) {
@@ -230,9 +249,9 @@
       var foto = '<img class="sala-mini" src="' + ROOT + 'assets/img/' + s.foto + '-800.webp" alt="' + s.nazwa + '" width="800" height="450">';
       var inne = INNE.filter(function (x) { return st.goscie <= x.max; }).map(function (x) { return x.nazwa + ' (do ' + x.max + ' osób)'; });
       var inneH = inne.length ? '<p class="inne-sale">Do indywidualnego ustalenia: ' + inne.join(', ') + '.</p>' : '';
-      wyn.innerHTML = '<h3>' + s.nazwa + '</h3><p style="color:var(--zloto-j)">' + s.ile + '</p>' + stan + foto +
+      wyn.innerHTML = '<h3>' + s.nazwa + '</h3><p class="sala-ile">' + s.ile + '</p>' + stan + foto +
         inneH + '<ul class="podsum"><li><span>Okazja</span>' + esc(st.okazja) + '</li><li><span>Liczba gości</span>' + st.goscie + '</li><li><span>Noclegi</span>23 pokoje na miejscu</li></ul>' +
-        '<a class="btn btn-zloty" href="#planer-form" data-do-formularza>Przejdź do zapytania</a>';
+        '<a class="btn btn-bialy" href="#planer-form" data-do-formularza>Przejdź do zapytania</a>';
     }
     wyn.addEventListener('click', function (e) { if (e.target.closest('[data-do-formularza]')) { e.preventDefault(); var f = $('#planer-form'); f.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(function () { var i = $('input', f); if (i) i.focus({ preventScroll: true }); }, 450); } });
     $$('.chipy', root).forEach(function (g) {
@@ -280,6 +299,23 @@
       .bindTooltip('Potocki Dwór', { direction: 'top', offset: [0, -20], permanent: true });
   })();
 
+  /* ---------- hotel: pasek przyjazd / wyjazd / osoby -> formularz zapytania (docelowo widget KW Hotel) ---------- */
+  (function () {
+    var f = $('#szybka-rez'); if (!f) return;
+    var od = $('#sr-od'), dd = $('#sr-do');
+    var iso = function (d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    var dzis = new Date(); od.min = iso(dzis); dd.min = iso(new Date(dzis.getTime() + 864e5));
+    od.addEventListener('change', function () { if (od.value) { var n = new Date(od.value); n.setDate(n.getDate() + 1); dd.min = iso(n); if (!dd.value || dd.value <= od.value) dd.value = iso(n); } });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (od.value) $('#h-od').value = od.value;
+      if (dd.value) $('#h-do').value = dd.value;
+      if ($('#sr-osoby').value) $('#h-osoby').value = $('#sr-osoby').value;
+      var r = $('#rezerwacja'); r.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(function () { var i = $('#h-imie'); if (i) i.focus({ preventScroll: true }); }, 500);
+    });
+  })();
+
   /* ---------- modul rezerwacji KW Hotel PRO ---------- */
   (function () {
     var box = $('#kw-modul'); if (!box) return;
@@ -288,7 +324,7 @@
       box.innerHTML = kw.kod;
       $$('script', box).forEach(function (s) { var n = document.createElement('script'); Array.prototype.forEach.call(s.attributes, function (a) { n.setAttribute(a.name, a.value); }); n.text = s.text; s.replaceWith(n); });
     } else if (kw.link) {
-      box.innerHTML = '<a class="btn btn-zloty" href="' + esc(kw.link) + '" target="_blank" rel="noopener" data-ev="begin_reservation">Rezerwacja online</a>';
+      box.innerHTML = '<a class="btn btn-glowny" href="' + esc(kw.link) + '" target="_blank" rel="noopener" data-ev="begin_reservation">Rezerwacja online</a>';
     }
   })();
 

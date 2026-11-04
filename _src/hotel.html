@@ -7,20 +7,29 @@
  "cta_mob": ["Zarezerwuj pokój", "hotel/#rezerwacja"],
  "jsonld": ["hotel"]
 } -->
-<section class="hero" style="--poz:center 60%;--poz-tel:40% 60%">
-  <figure class="hero-foto"><img src="{{R}}assets/img/pokoj-dbl-1600.webp" srcset="{{R}}assets/img/pokoj-dbl-800.webp 800w, {{R}}assets/img/pokoj-dbl-1600.webp 1600w" sizes="100vw" width="1600" height="1065" alt="Pokój hotelowy z łóżkiem małżeńskim, zasłonami i telewizorem" fetchpriority="high"></figure>
-  <div class="hero-in">
-    <p class="hero-adres">Hotel Potocki Dwór</p>
+<section class="hero">
+  <div class="hero-tekst">
     <h1>23 pokoje ze śniadaniem w cenie</h1>
     <p class="lead">Na wypoczynek po weselu, na nocleg w trasie i na wyjazd szkoleniowy. Restauracja i sale są na miejscu.</p>
     <div class="hero-cta">
-      <a class="btn btn-zloty" href="#rezerwacja" data-ev="begin_reservation">Zarezerwuj pokój</a>
-      <a class="btn btn-linia" href="#pokoje">Pokoje</a>
+      <a class="btn btn-glowny" href="#rezerwacja" data-ev="begin_reservation">Zarezerwuj pokój</a>
+      <a class="btn btn-obrys" href="#pokoje">Pokoje</a>
     </div>
   </div>
+  <figure class="hero-foto" style="--poz:center 60%"><img src="{{R}}assets/img/pokoj-dbl-1600.webp" srcset="{{R}}assets/img/pokoj-dbl-800.webp 800w, {{R}}assets/img/pokoj-dbl-1600.webp 1600w" sizes="(max-width:760px) 100vw, 60vw" width="1600" height="1065" alt="Pokój hotelowy z łóżkiem małżeńskim, zasłonami i telewizorem" fetchpriority="high"></figure>
 </section>
 
-<section class="sekcja biala" id="pokoje" aria-labelledby="h-pokoje">
+<section class="szybka-rez" aria-label="Sprawdź termin pobytu">
+  <!-- Docelowo w tym miejscu widget KW Hotel PRO (config.js -> kwHotel). Do tego czasu pasek przenosi daty do formularza zapytania. -->
+  <form class="wrap szybka-rez-in" id="szybka-rez">
+    <div class="pole"><label for="sr-od">Przyjazd</label><input id="sr-od" type="date"></div>
+    <div class="pole"><label for="sr-do">Wyjazd</label><input id="sr-do" type="date"></div>
+    <div class="pole"><label for="sr-osoby">Liczba osób</label><input id="sr-osoby" type="number" min="1" max="60" value="2" inputmode="numeric"></div>
+    <button class="btn btn-glowny" type="submit" data-ev="begin_reservation">Sprawdź termin</button>
+  </form>
+</section>
+
+<section class="sekcja" id="pokoje" aria-labelledby="h-pokoje">
   <div class="wrap">
     <div class="naglowek">
       <h2 id="h-pokoje">Pokoje</h2>
@@ -51,8 +60,8 @@
   </div>
 </section>
 
-<section class="sekcja" aria-labelledby="h-standard">
-  <div class="wrap dwie">
+<section class="sekcja tlo2" aria-labelledby="h-standard">
+  <div class="wrap trzy-std">
     <div>
       <h2 id="h-standard">Standard i wyposażenie</h2>
       <p class="lead-s">Każdy pokój łączy przytulność z funkcjonalnością. W standardzie:</p>
@@ -66,18 +75,18 @@
     <div>
       <h2>Śniadanie w cenie</h2>
       <p class="lead-s">W cenie każdego noclegu serwujemy urozmaicone śniadanie ze świeżych składników: od chrupiącego pieczywa, przez dania na ciepło, po lokalne akcenty i zdrowe przekąski.</p>
-      <img class="foto-r" style="margin-top:26px" src="{{R}}assets/img/resto-okno-800.webp" alt="Stół w restauracji przy dużym oknie" loading="lazy" width="800" height="532">
     </div>
+    <img class="foto-r" src="{{R}}assets/img/resto-okno-800.webp" alt="Stół w restauracji przy dużym oknie" loading="lazy" width="800" height="532">
   </div>
 </section>
 
-<section class="sekcja biala" aria-labelledby="h-galeria-h">
+<section class="sekcja" aria-labelledby="h-galeria-h">
   <div class="wrap">
     <h2 id="h-galeria-h" class="naglowek">Zdjęcia</h2>
-    <div class="galeria" data-lb-grupa>
-      <button type="button" class="duze" data-lb data-src="{{R}}assets/img/fasada2-1600.webp" data-opis="Fasada Potockiego Dworu"><img src="{{R}}assets/img/fasada2-800.webp" alt="Fasada Potockiego Dworu z kolumnami" loading="lazy" width="800" height="532"></button>
+    <div class="galeria galeria-5" data-lb-grupa>
+      <button type="button" class="duze" data-lb data-src="{{R}}assets/img/pokoj-lozko-1600.webp" data-opis="Łóżko pojedyncze"><img src="{{R}}assets/img/pokoj-lozko-800.webp" alt="Łóżko pojedyncze z białą pościelą" loading="lazy" width="800" height="532"></button>
       <button type="button" data-lb data-src="{{R}}assets/img/lazienka-1600.webp" data-opis="Łazienka z prysznicem"><img src="{{R}}assets/img/lazienka-800.webp" alt="Łazienka z prysznicem" loading="lazy" width="800" height="532"></button>
-      <button type="button" data-lb data-src="{{R}}assets/img/pokoj-lozko-1600.webp" data-opis="Łóżko pojedyncze"><img src="{{R}}assets/img/pokoj-lozko-800.webp" alt="Łóżko pojedyncze z białą pościelą" loading="lazy" width="800" height="532"></button>
+      <button type="button" data-lb data-src="{{R}}assets/img/fasada2-1600.webp" data-opis="Fasada Potockiego Dworu"><img src="{{R}}assets/img/fasada2-800.webp" alt="Fasada Potockiego Dworu z kolumnami" loading="lazy" width="800" height="532"></button>
       <button type="button" data-lb data-src="{{R}}assets/img/pokoj-wejscie-1600.webp" data-opis="Wejście do pokoju"><img src="{{R}}assets/img/pokoj-wejscie-800.webp" alt="Widok na pokój od drzwi" loading="lazy" width="800" height="532"></button>
       <button type="button" data-lb data-src="{{R}}assets/img/recznik-1600.webp" data-opis="Ręcznik w łazience"><img src="{{R}}assets/img/recznik-800.webp" alt="Ręcznik w łazience" loading="lazy" width="800" height="532"></button>
     </div>
@@ -103,7 +112,7 @@
       <div class="pole cale"><label for="h-mail">E-mail (opcjonalnie)</label><input id="h-mail" name="email" type="email" autocomplete="email"><span class="blad">Sprawdź adres e-mail.</span></div>
       <div class="pole cale"><label for="h-uwagi">Uwagi (opcjonalnie)</label><textarea id="h-uwagi" name="uwagi" rows="3"></textarea></div>
       <p class="form-info cale">Dane z formularza wykorzystamy wyłącznie do odpowiedzi na zapytanie.</p>
-      <div class="cale"><button class="btn btn-zloty" type="submit" data-ev="begin_reservation">Wyślij zapytanie o pokój</button></div>
+      <div class="cale"><button class="btn btn-bialy" type="submit" data-ev="begin_reservation">Wyślij zapytanie o pokój</button></div>
     </form>
   </div>
 </section>
