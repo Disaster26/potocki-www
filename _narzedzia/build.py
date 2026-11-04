@@ -4,7 +4,7 @@
 import os, json, re
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 SRC = os.path.join(ROOT, '_src')
-V = '4'  # wersja plikow css/js (cache)
+V = '5'  # wersja plikow css/js (cache)
 
 STRONY = [
   # plik zrodlowy, sciezka wyjsciowa, klucz menu
@@ -98,7 +98,7 @@ def szablon(meta, tresc, klucz, R):
     </div>
     <div class="stopka-kontakty">
       <div><h2>Recepcja</h2><p><a href="tel:{TEL}" data-ev="click_tel">{TEL_T}</a></p><p><a href="mailto:{MAIL}">{MAIL}</a></p></div>
-      <div><h2>Przyjęcia</h2><p>K. Wieczorek</p><p><a href="tel:+48784043570" data-ev="click_tel">784 043 570</a></p><p><a href="mailto:k.wieczorek@potockidwor.pl">k.wieczorek@potockidwor.pl</a></p></div>
+      <div><h2>Przyjęcia</h2><p>Katarzyna Wieczorek</p><p><a href="tel:+48784043570" data-ev="click_tel">784 043 570</a></p><p><a href="mailto:k.wieczorek@potockidwor.pl">k.wieczorek@potockidwor.pl</a></p></div>
       <div><h2>Biznes</h2><p>M. Pronobis</p><p><a href="tel:+48532162301" data-ev="click_tel">532 162 301</a></p><p><a href="mailto:m.pronobis@potockidwor.pl">m.pronobis@potockidwor.pl</a></p></div>
     </div>
     <nav class="stopka-menu" aria-label="Menu w stopce"><a href="{R}">Strona główna</a>{"".join(f'<a href="{R}{h}">{n}</a>' for k, h, n in MENU)}</nav>

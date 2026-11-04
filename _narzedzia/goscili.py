@@ -34,7 +34,6 @@ LOGA = [
 ]
 # pasek na stronie głównej (brief 04.11): 8 najbardziej rozpoznawalnych
 NA_GLOWNA = ['bnp-paribas', 'pge', 'de-heus', 'kasa-stefczyka', 'universal', 'quickpack', 'famet', 'sefako']
-# Komenda Powiatowa Policji w Jędrzejowie: bez logotypu (godło tylko za zgodą), pominięta.
 # logotypy jednobarwne białe (na stronie firmy na ciemnym tle) -> ten sam kształt w kolorze granatowym
 NA_GRANAT = {'universal.svg', 'flora-biale.png'}
 
