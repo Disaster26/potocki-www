@@ -600,7 +600,7 @@ b{font-weight:600}
   .hero-foto{aspect-ratio:2/1}
   .hero .lead{margin-top:10px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.hero-pokaz img{transition:opacity .8s ease!important}}
 /* pulapka na boty w formularzach (wypelniaja ja tylko automaty) */
 .hp{position:absolute!important;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 .formularz{position:relative}

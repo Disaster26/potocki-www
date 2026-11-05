@@ -6,7 +6,7 @@
 import os, sys, json, re, shutil, subprocess, datetime
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 SRC = os.path.join(ROOT, '_src')
-V = '9'
+V = '10'
 FONTY = 'https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Libre+Franklin:wght@400;500;600&display=swap'  # wersja plikow css/js (cache)
 
 # DOCELOWA DOMENA - jedyne miejsce (canonical, og:url, JSON-LD, sitemap, robots, llms.txt). Bez www, z https i ukosnikiem.

@@ -66,7 +66,7 @@
     u(); window.addEventListener('scroll', u, { passive: true });
   })();
 
-  /* ---------- pokaz zdjec w hero glownej (co ok. 6 s; stop: reduced motion, ukryta karta, wybor reczny) ---------- */
+  /* ---------- pokaz zdjec w hero glownej (co ok. 6 s, przy reduced motion 8 s; pauza: ukryta karta, wybor reczny na 15 s) ---------- */
   (function () {
     var f = $('[data-pokaz]'); if (!f) return;
     var zdj = $$('img', f), wsk = $$('.pokaz-wsk button', f), i = 0, t = null, reczny = false;
@@ -78,8 +78,10 @@
       wsk.forEach(function (b, k) { b.setAttribute('aria-current', k === i); });
     };
     var stop = function () { clearInterval(t); t = null; };
-    var start = function () { stop(); if (reczny || spokoj.matches || document.hidden) return; t = setInterval(function () { pokaz(i + 1); }, 6000); };
-    wsk.forEach(function (b, k) { b.addEventListener('click', function () { reczny = true; stop(); pokaz(k); }); });
+    /* przy ograniczonym ruchu w systemie (np. Windows bez efektow animacji) pokaz dziala dalej: samo przenikanie, rzadziej */
+    var start = function () { stop(); if (reczny || document.hidden) return; t = setInterval(function () { pokaz(i + 1); }, spokoj.matches ? 8000 : 6000); };
+    var wznow = null;
+    wsk.forEach(function (b, k) { b.addEventListener('click', function () { reczny = true; stop(); pokaz(k); clearTimeout(wznow); wznow = setTimeout(function () { reczny = false; start(); }, 15000); }); });
     document.addEventListener('visibilitychange', start);
     if (spokoj.addEventListener) spokoj.addEventListener('change', start);
     /* kolejne zdjecia dociagamy po zaladowaniu strony (pierwsze ma preload) */
