@@ -81,7 +81,20 @@
     /* przy ograniczonym ruchu w systemie (np. Windows bez efektow animacji) pokaz dziala dalej: samo przenikanie, rzadziej */
     var start = function () { stop(); if (reczny || document.hidden) return; t = setInterval(function () { pokaz(i + 1); }, spokoj.matches ? 8000 : 6000); };
     var wznow = null;
-    wsk.forEach(function (b, k) { b.addEventListener('click', function () { reczny = true; stop(); pokaz(k); clearTimeout(wznow); wznow = setTimeout(function () { reczny = false; start(); }, 15000); }); });
+    wsk.forEach(function (b, k) { b.addEventListener('click', function () { recznie(k); }); });
+    /* przesuniecie palcem (lub mysza z wcisnietym przyciskiem): w lewo - nastepne, w prawo - poprzednie; pionowe przewijanie strony bez zmian */
+    var ruchX = null, ruchY = 0, strefa = f.closest('section, .hero') || f;
+    var recznie = function (n) { reczny = true; stop(); pokaz(n); clearTimeout(wznow); wznow = setTimeout(function () { reczny = false; start(); }, 15000); };
+    strefa.addEventListener('touchstart', function (e) { var d = e.touches[0]; ruchX = d.clientX; ruchY = d.clientY; }, { passive: true });
+    strefa.addEventListener('touchend', function (e) {
+      if (ruchX === null) return; var d = e.changedTouches[0], dx = d.clientX - ruchX, dy = d.clientY - ruchY; ruchX = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) recznie(i + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+    f.addEventListener('pointerdown', function (e) { if (e.pointerType === 'mouse' && !e.target.closest('a,button')) { ruchX = e.clientX; ruchY = e.clientY; } });
+    f.addEventListener('pointerup', function (e) {
+      if (e.pointerType !== 'mouse' || ruchX === null) return; var dx = e.clientX - ruchX, dy = e.clientY - ruchY; ruchX = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) recznie(i + (dx < 0 ? 1 : -1));
+    });
     document.addEventListener('visibilitychange', start);
     if (spokoj.addEventListener) spokoj.addEventListener('change', start);
     /* kolejne zdjecia dociagamy po zaladowaniu strony (pierwsze ma preload) */
