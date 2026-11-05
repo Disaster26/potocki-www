@@ -181,16 +181,54 @@
   /* ---------- formularze: walidacja + podsumowanie zapytania (docelowo wysylka przez WordPress) ---------- */
   function adresDla(rodzaj) { var e = CFG.emaileFormularzy || {}; return e[rodzaj] || CFG.email || 'recepcja@potockidwor.pl'; }
   window.potockiDodatki = {}; /* rodzaj formularza -> funkcja zwracajaca dodatkowe linie (np. dane z planera) */
+  /* wysylka przez serwer strony (wyslij.php): znacznik jednorazowy + pulapka na boty; bez adresu = tryb podgladu (program pocztowy) */
+  var URL_F = (CFG.formularz && CFG.formularz.url) ? (/^(https?:)?\//.test(CFG.formularz.url) ? CFG.formularz.url : ROOT + CFG.formularz.url) : '';
+  var znacznik = null, znKiedy = 0, znLaduje = null;
+  function pobierzZnacznik(swiezy) {
+    if (!swiezy && znacznik && Date.now() - znKiedy < 3 * 3600e3) return Promise.resolve(znacznik);
+    if (znLaduje) return znLaduje;
+    znLaduje = fetch(URL_F + '?znacznik=1', { cache: 'no-store', credentials: 'same-origin' })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (j) { znacznik = j.z; znKiedy = Date.now(); return znacznik; })
+      .then(function (z) { znLaduje = null; return z; }, function (e) { znLaduje = null; throw e; });
+    return znLaduje;
+  }
+  var czekaj = function (ms) { return new Promise(function (ok) { setTimeout(ok, ms); }); };
+  /* proba 0: znacznik z pamieci; 'szybko' (< 3 s od pobrania znacznika) = ten sam znacznik po chwili;
+     'znacznik' (wygasl / zuzyty) = nowy znacznik i odczekanie 3 s; najwyzej jedna ponowna proba */
+  function wyslijSerwer(dane, proba, zTen) {
+    var zp = zTen ? Promise.resolve(zTen) : (proba ? pobierzZnacznik(true).then(function (z) { return czekaj(3200).then(function () { return z; }); }) : pobierzZnacznik());
+    return zp.then(function (z) {
+      /* serwer przyjmuje znacznik najwczesniej 3 s po wydaniu: przy bardzo szybkim wypelnieniu czekamy reszte */
+      var wiek = Date.now() - znKiedy;
+      return (z === znacznik && wiek < 3300 ? czekaj(3300 - wiek) : Promise.resolve()).then(function () { return z; });
+    }).then(function (z) {
+      dane.set('_z', z);
+      return fetch(URL_F, { method: 'POST', body: dane, credentials: 'same-origin' }).then(function (r) {
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          if (r.ok && j.success) { znacznik = null; return true; } /* znacznik jest jednorazowy */
+          if (r.status === 403 && j.blad === 'szybko' && !proba) return czekaj(3200).then(function () { return wyslijSerwer(dane, 1, z); });
+          if (r.status === 403 && j.blad === 'znacznik' && !proba) { znacznik = null; return wyslijSerwer(dane, 1); }
+          throw new Error(j.blad || r.status);
+        });
+      });
+    });
+  }
   $$('form[data-form]').forEach(function (f) {
     var rodzaj = f.getAttribute('data-form'), temat = f.getAttribute('data-temat') || 'Zapytanie ze strony';
     var wynik = document.createElement('div'); wynik.className = 'form-wynik'; wynik.hidden = true; wynik.setAttribute('aria-live', 'polite'); f.appendChild(wynik);
+    /* pulapka na boty: pole niewidoczne dla ludzi i czytnikow ekranu, wypelniaja je tylko automaty */
+    var hp = document.createElement('div'); hp.className = 'hp'; hp.setAttribute('aria-hidden', 'true');
+    hp.innerHTML = '<label for="hp-' + rodzaj + '">Strona firmy</label><input id="hp-' + rodzaj + '" name="_honey" type="text" tabindex="-1" autocomplete="off">';
+    f.insertBefore(hp, f.firstChild);
     f.setAttribute('novalidate', '');
     f.addEventListener('input', function (e) { var p = e.target.closest('.pole'); if (p) p.classList.remove('zle'); });
+    if (URL_F) f.addEventListener('focusin', function () { pobierzZnacznik().catch(function () {}); }, { once: true });
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var ok = true, pierwszy = null;
       $$('input,select,textarea', f).forEach(function (el) {
-        if (!el.name) return;
+        if (!el.name || el.name.charAt(0) === '_') return;
         var p = el.closest('.pole'); var v = el.value.trim(); var zle = false;
         if (el.required && !v) zle = true;
         if (v && el.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) zle = true;
@@ -201,15 +239,42 @@
       var dod = window.potockiDodatki[rodzaj] ? window.potockiDodatki[rodzaj]() : null;
       if (dod && dod.blad) { ok = false; dod.blad(); }
       if (!ok) { if (pierwszy) pierwszy.focus(); return; }
-      var linie = dod && dod.linie ? dod.linie.slice() : [];
+      var linie = dod && dod.linie ? dod.linie.slice() : [], pary = [], email = '';
+      linie.forEach(function (l) { var i = l.indexOf(': '); if (i > 0) pary.push([l.slice(0, i), l.slice(i + 2)]); });
       $$('input,select,textarea', f).forEach(function (el) {
-        if (!el.name || !el.value.trim()) return;
+        if (!el.name || el.name.charAt(0) === '_' || !el.value.trim()) return;
         if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) return;
         var lab = f.querySelector('label[for="' + el.id + '"]'); var nazwa = lab ? lab.textContent.replace(/\s*\(.*\)\s*$/, '').replace(/\*$/, '').trim() : el.name;
-        linie.push(nazwa + ': ' + el.value.trim());
+        linie.push(nazwa + ': ' + el.value.trim()); pary.push([nazwa, el.value.trim()]);
+        if (el.type === 'email') email = el.value.trim();
       });
       var tresc = linie.join('\n');
       var adres = adresDla(rodzaj);
+      if (URL_F) {
+        var przycisk = $('button[type=submit]', f), napis = przycisk ? przycisk.textContent : '';
+        if (f.getAttribute('aria-busy') === 'true') return;
+        f.setAttribute('aria-busy', 'true'); if (przycisk) { przycisk.disabled = true; przycisk.textContent = 'Wysyłanie...'; }
+        var dane = new FormData();
+        dane.append('_honey', ($('[name=_honey]', f) || {}).value || '');
+        dane.append('_rodzaj', rodzaj); dane.append('_subject', temat); dane.append('_pola', JSON.stringify(pary)); dane.append('email', email);
+        wyslijSerwer(dane, 0).then(function () {
+          wynik.innerHTML = '<h4>Dziękujemy, zapytanie zostało wysłane</h4><p>Odpowiemy najszybciej, jak to możliwe. W pilnej sprawie prosimy o telefon: <a href="tel:' + esc(CFG.telefon || '') + '">' + esc(CFG.telefonTekst || '') + '</a>.</p>';
+          wynik.hidden = false; f.classList.add('wyslany');
+          $$('input,textarea', f).forEach(function (el) { if (el.name && el.name.charAt(0) !== '_' && el.type !== 'number' && el.type !== 'date') el.value = ''; });
+          window.potockiTrack('generate_lead', { formularz: rodzaj });
+        }).catch(function (err) {
+          var mailto2 = 'mailto:' + adres + '?subject=' + encodeURIComponent(temat) + '&body=' + encodeURIComponent(tresc);
+          var limit = /limit|globalny|429/.test(String(err && err.message));
+          wynik.innerHTML = '<h4>Nie udało się wysłać zapytania</h4><p>' + (limit ? 'Z tej sieci wysłano już dużo zapytań. ' : 'Wystąpił chwilowy problem z połączeniem. ') +
+            'Prosimy wysłać je e-mailem albo zadzwonić: <a href="tel:' + esc(CFG.telefon || '') + '">' + esc(CFG.telefonTekst || '') + '</a>.</p><pre>' + esc(tresc) + '</pre>' +
+            '<div class="akcje"><a class="btn btn-glowny" href="' + esc(mailto2) + '">Wyślij e-mailem</a></div>';
+          wynik.hidden = false;
+        }).then(function () {
+          f.removeAttribute('aria-busy'); if (przycisk) { przycisk.disabled = false; przycisk.textContent = napis; }
+          wynik.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        return;
+      }
       var mailto = 'mailto:' + adres + '?subject=' + encodeURIComponent(temat) + '&body=' + encodeURIComponent(tresc + '\n\n(wysłano ze strony potockidwor.pl)');
       wynik.innerHTML = '<h4>Zapytanie gotowe</h4><p>Wersja robocza strony: po uruchomieniu formularz wyśle je automatycznie na ' + esc(adres) + '. Teraz można je wysłać z programu pocztowego.</p><pre>' + esc(tresc) + '</pre>' +
         '<div class="akcje"><a class="btn btn-glowny" href="' + esc(mailto) + '">Wyślij e-mailem</a><button type="button" class="btn btn-obrys" data-kopiuj>Skopiuj treść</button></div>';
@@ -287,12 +352,36 @@
       return { linie: ['Okazja: ' + st.okazja, 'Liczba gości: ' + st.goscie, 'Data: ' + fmt(st.data), 'Proponowana sala: ' + SALE[sala()].nazwa, ''] };
     };
     /* zajetosc z Kalendarza Google (przez serwer) - wlaczane w config.js */
+    /* Ochrona endpointu (Apps Script ma dzienne limity): jedno zapytanie na wizyte (cala zajetosc na 12 miesiecy naraz),
+       wynik w sessionStorage na 10 min (przejscia miedzy podstronami bez zapytan), pobranie dopiero gdy planer jest blisko ekranu,
+       nigdy dwa zapytania naraz, limit czasu 10 s. Po bledzie: ponowienie tylko przy zmianie daty, z opoznieniem 600 ms, max 2 razy. */
+    var KAL_PAMIEC = 'potocki_zajetosc_v1', kalStan = 'brak', kalProby = 0, kalTimer = null;
     function wczytajZajetosc() {
-      var k = CFG.kalendarz || {}; if (!k.url) return;
-      fetch(k.url).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+      var k = CFG.kalendarz || {}; if (!k.url || kalStan === 'laduje' || kalStan === 'ok') return;
+      try {
+        var c = JSON.parse(sessionStorage.getItem(KAL_PAMIEC) || 'null');
+        if (c && c.u === k.url && Date.now() - c.t < 6e5 && c.z) { zajete = c.z; kalStan = 'ok'; rysujKal(); rysuj(); return; }
+      } catch (e) {}
+      kalStan = 'laduje'; kalProby++;
+      var ac = window.AbortController ? new AbortController() : null, tm = setTimeout(function () { if (ac) ac.abort(); }, 10000);
+      var kk = ''; try { kk = sessionStorage.getItem('potocki_k') || Math.random().toString(36).slice(2, 12); sessionStorage.setItem('potocki_k', kk); } catch (e) {}
+      var adres = k.url + (kk ? (k.url.indexOf('?') > -1 ? '&' : '?') + 'k=' + kk : '');   /* klucz do limitu w Apps Script (_src/APPS_SCRIPT_LIMIT.md) */
+      fetch(adres, ac ? { signal: ac.signal, credentials: 'omit' } : { credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
         zajete = k.format === 'ical' ? zIcal(t) : (JSON.parse(t).zajete || {});
+        kalStan = 'ok';
+        try { sessionStorage.setItem(KAL_PAMIEC, JSON.stringify({ u: k.url, t: Date.now(), z: zajete })); } catch (e) {}
         rysujKal(); rysuj();
-      }).catch(function () { zajete = null; });
+      }).catch(function () { zajete = null; kalStan = 'blad'; }).then(function () { clearTimeout(tm); });
+    }
+    function ponowZajetosc() { /* wolane przy zmianie daty; debounce = jedno zapytanie na serie klikniec */
+      if (kalStan !== 'blad' || kalProby > 2) return;
+      clearTimeout(kalTimer); kalTimer = setTimeout(wczytajZajetosc, 600);
+    }
+    kal.addEventListener('click', function (e) { if (e.target.closest('button[data-d]')) ponowZajetosc(); });
+    function startZajetosc() {
+      if (!('IntersectionObserver' in window)) { wczytajZajetosc(); return; }
+      var io = new IntersectionObserver(function (w) { if (w.some(function (x) { return x.isIntersecting; })) { io.disconnect(); wczytajZajetosc(); } }, { rootMargin: '600px 0px' });
+      io.observe(root);
     }
     function zIcal(t) {
       /* DTSTART/DTEND z VEVENT; nazwa sali tylko jesli SUMMARY ja zawiera, inaczej caly dzien zajety */
@@ -307,7 +396,7 @@
       });
       return wyn;
     }
-    rysujKal(); rysuj(); wczytajZajetosc();
+    rysujKal(); rysuj(); startZajetosc();
   })();
 
   /* ---------- mapa dojazdu (OpenStreetMap) ---------- */
@@ -316,7 +405,7 @@
     var ll = [50.6085, 20.2364];
     var mapa = L.map(box, { scrollWheelZoom: false }).setView(ll, 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(mapa);
-    L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="pin"></div>', iconSize: [22, 22], iconAnchor: [11, 22] }), alt: 'Potocki Dwór' }).addTo(mapa)
+    L.marker(ll, { icon: L.divIcon({ className: '', html: '<div class="pin"></div>', iconSize: [22, 22], iconAnchor: [11, 22] }), alt: 'Potocki Dwór', title: 'Potocki Dwór, Potok Wielki 83A' }).addTo(mapa)
       .bindTooltip('Potocki Dwór', { direction: 'top', offset: [0, -20], permanent: true });
   })();
 
