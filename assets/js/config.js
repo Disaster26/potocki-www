@@ -8,7 +8,12 @@ window.POTOCKI_CONFIG = {
 
   /* Adresy formularzy (klient 22.10): przyjęcia -> k.wieczorek@, biznes -> m.pronobis@;
      hotel -> recepcja@ (klient 29.10). Puste = e-mail ogólny powyżej. */
-  emaileFormularzy: { przyjecia: 'k.wieczorek@potockidwor.pl', hotel: 'recepcja@potockidwor.pl', biznes: 'm.pronobis@potockidwor.pl', kontakt: '' },
+  emaileFormularzy: { przyjecia: 'k.wieczorek@potockidwor.pl', hotel: 'recepcja@potockidwor.pl', biznes: 'm.pronobis@potockidwor.pl', catering: 'k.wieczorek@potockidwor.pl', kontakt: '' },
+
+  /* Wysyłka formularzy: adres skryptu na serwerze strony (wyslij.php, względem katalogu głównego strony).
+     Puste = podgląd: zapytanie składane w programie pocztowym. Wersja produkcyjna (build.py --prod) wpisuje 'wyslij.php'.
+     Odbiorcy są zapisani na serwerze w wyslij.php (te same adresy co wyżej), przeglądarka ich nie wybiera. */
+  formularz: { url: '' },
 
   /* Kalendarze Google sal (Balowa, Bankietowa) - zajętość dla planera przyjęć. PODPIĘTE 23.10.2026:
      skrypt Apps Script "Potocki - zajetosc sal" na koncie odrobimy@gmail.com (Freebusy, tylko wolny/zajęty, cache 10 min).
