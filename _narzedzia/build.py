@@ -11,7 +11,7 @@ FONTY = 'https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60
 
 # DOCELOWA DOMENA - jedyne miejsce (canonical, og:url, JSON-LD, sitemap, robots, llms.txt). Bez www, z https i ukosnikiem.
 DOMENA = 'https://potockidwor.pl/'
-PODGLAD = 'https://disaster26.github.io/potocki-www/'
+PODGLAD = 'https://wylinka-podglad.pl/potocki-www/'
 PROD = '--prod' in sys.argv
 OUT = os.path.abspath(sys.argv[sys.argv.index('--prod') + 1]) if PROD else ROOT
 BAZA = DOMENA if PROD else PODGLAD   # adresy bezwzgledne (og:image)
